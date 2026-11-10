@@ -1,0 +1,11 @@
+{
+  "name": "line",
+  "private": true,
+  "scripts": {
+    "css": "tailwindcss -i ./styles/app.css -o ./wwwroot/site.css --minify"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.16",
+    "tailwindcss": "^4.1.16"
+  }
+}

@@ -1,0 +1,149 @@
+# ---
+# id: "otai-desk-modules"
+# title: "OTAI Desk Modules"
+# domain: "otai-desk"
+# status: "plan-refactor"
+# version: "2.1.0"
+# description: >-
+#   Code shape inside the one OTAI Desk process (LD-099). Modular monolith:
+#   one module per feature behind IDeskModule. Tickets owns a Ticket
+#   aggregate and is split into Domain, Application, Infrastructure, Pages,
+#   and Api. Ticket events live in Tickets Contracts and go through a
+#   Postgres outbox. Search, mail, reports, and the Studio Runtime webhook
+#   subscribe. ArchUnitNET tests guard the boundaries.
+# tags:
+#   - "otai-desk"
+#   - "architecture"
+#   - "modules"
+#   - "events"
+# related_adrs:
+#   - "LD-097"
+#   - "LD-098"
+#   - "LD-099"
+# related_docs:
+#   - "otai-desk/docs/adr/0099-otai-desk-is-a-modular-monolith-with-module-events.md"
+#   - "otai-desk/docs/diagrams/desk/otai-desk-architecture.d2"
+# render_width: 4200
+# ---
+
+...@../_theme
+
+direction: down
+
+desk: "OTAI Desk process" {
+  class: [group; layer_stack; app]
+  grid-columns: 1
+
+  host: Host {
+    class: [layer; inbound_adapter_layer]
+    grid-columns: 3
+    grid-gap: 32
+    program: Program.cs { class: component }
+    shell: "_Layout.cshtml" { class: component }
+    arch_tests: ArchUnitNET { class: component }
+  }
+
+  shared: Shared {
+    class: [layer; port_layer]
+    grid-columns: 3
+    grid-gap: 40
+    contract: IDeskModule {
+      shape: class
+      class: service
+      "AddServices(services)": ""
+      "BuildModel(model)": ""
+      "MapEndpoints(api)": ""
+      "Seed(services, seedDemo)": ""
+      "Navigation()": "plan"
+      "CasbinResources()": "plan"
+    }
+    actor: Actor { class: model }
+    dispatcher: OutboxDispatcher { class: service }
+  }
+
+  modules: Modules {
+    class: [layer; application_layer]
+    grid-columns: 5
+    grid-gap: 24
+    tickets: Tickets { class: component }
+    knowledge: Knowledge { class: component }
+    cmdb: Cmdb { class: component }
+    links: Links { class: component }
+    attributes: Attributes { class: component }
+    reports: Reports { class: component }
+    mail: Mail { class: component }
+    identity: Identity { class: component }
+    designs: Designs { class: component }
+  }
+
+  tickets: "Modules/Tickets" {
+    class: [layer; domain_layer]
+    grid-columns: 3
+    grid-gap: 24
+    pages: "Pages/" { class: component }
+    api: "Api/" { class: component }
+    application: "Application/" {
+      shape: class
+      class: service
+      "TicketUseCases": ""
+      "ITicketStore": "port"
+      "ITicketAttributeDefinitions": "port"
+    }
+    aggregate: "Domain/Ticket" {
+      shape: class
+      class: model
+      "Open(fields)": ""
+      "Change(change)": ""
+      "SetAttributes(values)": ""
+      "Reply(draft)": ""
+      "CheckEscalation(now)": "plan"
+    }
+    infrastructure: "Infrastructure/" { class: repository }
+    contracts: "Contracts/" {
+      shape: class
+      class: component
+      "TicketCreated": "plan"
+      "TicketReplied": "plan"
+      "TicketMoved": "plan"
+      "EscalationDue": "plan"
+    }
+  }
+
+  data: Data {
+    class: [layer; persistence_layer]
+    grid-columns: 3
+    grid-gap: 32
+    outbox: OutboxMessageRow {
+      shape: class
+      class: model
+      +id: UUID
+      +type: str
+      +payload: str
+      +occurred_at: datetime
+      +dispatched_at: "datetime | None"
+    }
+    pg: "PostgreSQL · module tables" { class: store }
+    search: Meilisearch { class: store }
+  }
+}
+
+runtime: "OTAI Studio Runtime" { class: external }
+smtp: SMTP { class: external }
+
+desk.host.program -> desk.shared.contract: registers
+desk.modules -> desk.shared.contract: implements
+desk.host.arch_tests -> desk.modules: checks
+desk.modules.tickets -> desk.tickets: owns
+desk.tickets.pages -> desk.tickets.application: call
+desk.tickets.api -> desk.tickets.application: call
+desk.tickets.application -> desk.tickets.aggregate: call
+desk.tickets.infrastructure -> desk.tickets.application: implements ports
+desk.tickets.infrastructure -> desk.data.pg: rows
+desk.tickets.infrastructure -> desk.data.outbox: same transaction
+desk.data.outbox -> desk.shared.dispatcher: poll
+desk.shared.dispatcher -> desk.tickets.contracts: deliver
+desk.tickets.contracts -> desk.data.search: index
+desk.tickets.contracts -> desk.modules.reports: count
+desk.tickets.contracts -> desk.modules.mail: notify
+desk.modules.mail -> smtp: send
+desk.tickets.contracts -> runtime: webhook

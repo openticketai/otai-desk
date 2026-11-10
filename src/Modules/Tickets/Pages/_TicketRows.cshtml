@@ -1,0 +1,19 @@
+@model IndexModel
+<ui-table>
+    <thead>
+        <tr><th>Number</th><th>Title</th><th>Status</th><th>Queue</th><th>Priority</th></tr>
+    </thead>
+    <tbody>
+    @foreach (var ticket in Model.Tickets.Select(read => read.Ticket))
+    {
+        <tr>
+            <td><a class="font-medium text-accent" href="/tickets/@ticket.Id" hx-get="/tickets/@ticket.Id" hx-target="#zoom" hx-swap="innerHTML" hx-push-url="true">@ticket.TicketNumber</a></td>
+            <td>@ticket.Title</td>
+            <td>@ticket.Status</td>
+            <td class="text-dim">@ticket.Queue</td>
+            <td class="text-dim">@ticket.Priority</td>
+        </tr>
+    }
+    </tbody>
+</ui-table>
+<div class="mt-4" id="zoom"></div>

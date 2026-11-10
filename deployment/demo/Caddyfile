@@ -1,0 +1,29 @@
+:80, desk-demo.openticketai.com {
+	handle /health {
+		reverse_proxy desk:8000
+	}
+	handle /docs* {
+		reverse_proxy desk:8000
+	}
+	handle /openapi.json {
+		reverse_proxy desk:8000
+	}
+	handle /api/* {
+		reverse_proxy desk:8000
+	}
+	handle_path /studio-api/* {
+		reverse_proxy otai-local-backend:8000
+	}
+	handle /studio {
+		redir /studio/ temporary
+	}
+	handle_path /studio/* {
+		reverse_proxy otai-studio:8080
+	}
+	handle /auth* {
+		reverse_proxy keycloak:8080
+	}
+	handle {
+		reverse_proxy ui:3000
+	}
+}

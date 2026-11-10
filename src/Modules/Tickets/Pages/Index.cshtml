@@ -1,0 +1,14 @@
+@page "/"
+@model IndexModel
+<h1 class="page-title">Tickets</h1>
+<form class="card mt-4 p-4" hx-get="/" hx-target="#tickets" hx-swap="innerHTML" hx-push-url="true">
+    <ui-grid columns="4">
+        <ui-field name="status" label="Status" input="text" value="@Model.Status" />
+        <ui-field name="queue" label="Queue" input="text" value="@Model.Queue" />
+        <ui-field name="priority" label="Priority" input="text" value="@Model.Priority" />
+        <button class="btn self-end" type="submit">Filter</button>
+    </ui-grid>
+</form>
+<div class="mt-4" id="tickets">
+    <partial name="_TicketRows" model="Model" />
+</div>

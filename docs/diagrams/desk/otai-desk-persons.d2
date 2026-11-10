@@ -1,0 +1,160 @@
+# ---
+# id: "otai-desk-persons"
+# title: "OTAI Desk Persons"
+# domain: "otai-desk"
+# status: "plan-feature"
+# version: "2.0.0"
+# description: >-
+#   Person, organization, role assignment, privilege tree, and queue grant
+#   (LD-100). A position stores a label. An organization scopes a role.
+#   A parent privilege includes its children. Conditions run after Casbin.
+# tags:
+#   - "otai-desk"
+#   - "persons"
+#   - "privileges"
+#   - "casbin"
+# related_adrs:
+#   - "LD-100"
+#   - "LD-097"
+# related_docs:
+#   - "otai-desk/docs/adr/0100-hub-plugins-persons-and-a-privilege-tree.md"
+#   - "otai-desk/docs/requirements-plugins-and-persons.md"
+# render_width: 4200
+# ---
+
+...@../_theme
+
+people: "Persons · privileges" {
+  class: [group; layer_stack; app]
+  grid-columns: 1
+
+  accounts: Accounts {
+    class: [layer; domain_layer]
+    grid-columns: 3
+    grid-gap: 32
+
+    person: Person {
+      shape: class
+      class: model
+      +id: UUID
+      +email: str
+      +display_name: str
+    }
+
+    organization: Organization {
+      shape: class
+      class: model
+      +id: UUID
+      +name: str
+    }
+
+    membership: Membership {
+      shape: class
+      class: model
+      +id: UUID
+      +person_id: UUID
+      +organization_id: UUID
+      +position: "str | None"
+    }
+  }
+
+  grants: Grants {
+    class: [layer; persistence_layer]
+    grid-columns: 4
+    grid-gap: 28
+
+    role: Role {
+      shape: class
+      class: model
+      +id: UUID
+      +name: str
+    }
+
+    assignment: RoleAssignment {
+      shape: class
+      class: model
+      +id: UUID
+      +person_id: UUID
+      +role_id: UUID
+      +organization_id: UUID
+    }
+
+    privilege: Privilege {
+      shape: class
+      class: model
+      +id: UUID
+      +name: str
+      +parent_id: "UUID | None"
+    }
+
+    role_privilege: RolePrivilege {
+      shape: class
+      class: model
+      +role_id: UUID
+      +privilege_id: UUID
+    }
+  }
+
+  scope: "Queue · condition" {
+    class: [layer; application_layer]
+    grid-columns: 3
+    grid-gap: 28
+
+    queue: Queue {
+      shape: class
+      class: model
+      +id: UUID
+      +organization_id: UUID
+      +name: str
+    }
+
+    queue_grant: QueueGrant {
+      shape: class
+      class: model
+      +id: UUID
+      +organization_id: UUID
+      +role_id: UUID
+      +queue_id: UUID
+      +privilege_id: UUID
+    }
+
+    condition: Condition {
+      shape: class
+      class: model
+      +id: UUID
+      +organization_id: UUID
+      +role_id: "UUID | None"
+      +queue_id: "UUID | None"
+      +when_state: "str | None"
+      +privilege_id: UUID
+      +effect: "str (allow|deny|values)"
+      +values_json: "str | None"
+    }
+  }
+
+  check: Casbin.NET {
+    class: [layer; application_layer]
+    grid-columns: 1
+    enforcer: CasbinEnforcer {
+      shape: class
+      class: service
+      "Enforce(person, organization, queue, privilege)": bool
+    }
+  }
+}
+
+people.accounts.person -> people.accounts.membership: person
+people.accounts.organization -> people.accounts.membership: organization
+people.accounts.person -> people.grants.assignment: person
+people.grants.role -> people.grants.assignment: role
+people.accounts.organization -> people.grants.assignment: organization
+people.grants.role -> people.grants.role_privilege: role
+people.grants.privilege -> people.grants.role_privilege: privilege
+people.accounts.organization -> people.scope.queue: organization
+people.grants.role -> people.scope.queue_grant: role
+people.scope.queue -> people.scope.queue_grant: queue
+people.grants.privilege -> people.scope.queue_grant: privilege
+people.accounts.organization -> people.scope.condition: organization
+people.grants.privilege -> people.scope.condition: privilege
+people.scope.queue_grant -> people.check.enforcer: policy
+people.scope.condition -> people.check.enforcer: after

@@ -1,0 +1,207 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: otai
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-otai}
+      POSTGRES_DB: otai_desk
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U otai -d otai_desk"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  postgres-backup:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD:-otai}
+      BACKUP_INTERVAL_SECONDS: ${BACKUP_INTERVAL_SECONDS:-86400}
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
+    volumes:
+      - pgbackups:/backups
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command:
+      - /bin/sh
+      - -c
+      - |
+        while true; do
+          stamp=$$(date -u +%Y%m%dT%H%M%SZ)
+          pg_dump -h postgres -U otai -d otai_desk -Fc -f "/backups/otai_desk_$$stamp.dump"
+          find /backups -name 'otai_desk_*.dump' -mtime +"$$BACKUP_KEEP_DAYS" -delete
+          sleep "$$BACKUP_INTERVAL_SECONDS"
+        done
+
+  desk:
+    build:
+      context: ../../line/backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    expose:
+      - "8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://otai:${POSTGRES_PASSWORD:-otai}@postgres:5432/otai_desk
+      OTAI_DESK_DEBUG: "true"
+      OTAI_DESK_SEED_DEMO: "true"
+      OTAI_DESK_SECRET_KEY: ${OTAI_DESK_SECRET_KEY:-change-me-in-production}
+      OTAI_DESK_API_TOKEN: ${OTAI_DESK_API_TOKEN:?Set OTAI_DESK_API_TOKEN in .env}
+      OTAI_DESK_CORS_ORIGINS: ${OTAI_DESK_CORS_ORIGINS:-*}
+      OTAI_DESK_TICKET_PROVIDER: ${OTAI_DESK_TICKET_PROVIDER:-desk}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  ui:
+    build:
+      context: ../../..
+      dockerfile: otai-desk/line/frontend/Dockerfile
+    restart: unless-stopped
+    expose:
+      - "3000"
+    depends_on:
+      - desk
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      desk:
+        condition: service_started
+      ui:
+        condition: service_started
+      otai-local-backend:
+        condition: service_started
+      otai-studio:
+        condition: service_started
+      keycloak:
+        condition: service_healthy
+
+  openldap:
+    image: osixia/openldap:1.5.0
+    restart: unless-stopped
+    command: ["--copy-service"]
+    environment:
+      LDAP_ORGANISATION: Open Ticket AI
+      LDAP_DOMAIN: openticketai.test
+      LDAP_ADMIN_PASSWORD: ${LDAP_ADMIN_PASSWORD:-otai-test-ldap}
+      LDAP_TLS: "false"
+    volumes:
+      - ./ldap/bootstrap.ldif:/container/service/slapd/assets/config/bootstrap/ldif/custom/50-bootstrap.ldif:ro
+      - ldap_data:/var/lib/ldap
+      - ldap_config:/etc/ldap/slapd.d
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "ldapsearch -H ldap://127.0.0.1:389 -x -s base -b '' -LLL namingContexts",
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 20s
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.8.1
+    restart: unless-stopped
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        set -eu
+        mkdir -p /opt/keycloak/data/import
+        sed "s/__LDAP_BIND_PASSWORD__/$${LDAP_ADMIN_PASSWORD}/g" /realm/realm.json > /opt/keycloak/data/import/otai-realm.json
+        exec /opt/keycloak/bin/kc.sh start-dev --import-realm
+    environment:
+      LDAP_ADMIN_PASSWORD: ${LDAP_ADMIN_PASSWORD:-otai-test-ldap}
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-otai-test-keycloak}
+      KC_HEALTH_ENABLED: "true"
+      KC_HTTP_ENABLED: "true"
+      KC_HTTP_RELATIVE_PATH: /auth
+      KC_PROXY_HEADERS: xforwarded
+      KC_HOSTNAME_STRICT: "false"
+    volumes:
+      - ./keycloak/realm.json:/realm/realm.json:ro
+    expose:
+      - "8080"
+    depends_on:
+      openldap:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/127.0.0.1/9000"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 40s
+
+  otai-local-backend:
+    build:
+      context: ../../../otai
+      dockerfile: apps/studio-api/Dockerfile
+    restart: unless-stopped
+    expose:
+      - "8000"
+    environment:
+      OTAI_DATABASE_PATH: /app/data/otai-studio.db
+      OTAI_SESSION_SECRET: ${OTAI_SESSION_SECRET:?Set OTAI_SESSION_SECRET in .env}
+      OTAI_SSO_SECRET: ${OTAI_SSO_SECRET:?Set OTAI_SSO_SECRET in .env}
+      OTAI_SESSION_TTL_SECONDS: ${OTAI_SESSION_TTL_SECONDS:-604800}
+      OTAI_STUDIO_APP_URL: ${OTAI_STUDIO_APP_URL:?Set OTAI_STUDIO_APP_URL in .env}
+      OTAI_API_TOKEN: ${OTAI_API_TOKEN:?Set OTAI_API_TOKEN in .env}
+      OTAI_LICENSE_KEY: ${OTAI_LICENSE_KEY:?Set OTAI_LICENSE_KEY in .env}
+      OTAI_SOFTWARE_VERSION: ${OTAI_SOFTWARE_VERSION:-1.2.0}
+      OTAI_RUNTIME_BASE_URL: http://127.0.0.1:8080
+      OTAI_PROMETHEUS_BASE_URL: http://127.0.0.1:9090
+      OTAI_TEMPO_BASE_URL: http://127.0.0.1:3200
+      OTAI_LLM_BASE_URL: ${OTAI_LLM_BASE_URL:-https://openrouter.ai/api/v1}
+      OTAI_LLM_PROVIDER: ${OTAI_LLM_PROVIDER:-openrouter}
+      OTAI_CHAT_WIDGET_DEFAULTS_CATALOG_PATH: /app/config/chat_widget_defaults.yml
+      OTAI_CHAT_WIDGET_CHROME_CATALOG_PATH: /app/config/chat_widget_chrome.yml
+      OTAI_TICKET_SYSTEM_TYPE: otai_desk
+      OTAI_TICKETSYSTEM_BASE_URL: http://desk:8000
+      OTAI_TICKETSYSTEM_ACCESS_TOKEN: ${OTAI_DESK_API_TOKEN:?Set OTAI_DESK_API_TOKEN in .env}
+    volumes:
+      - studio-data:/app/data
+    depends_on:
+      desk:
+        condition: service_started
+
+  otai-studio:
+    build:
+      context: ../../../otai
+      dockerfile: apps/studio-web/Dockerfile
+      additional_contexts:
+        otai-vue-ui: ../../../otai-website/packages/otai-vue-ui
+      args:
+        VITE_API_BASE_URL: /studio-api
+        VITE_BASE: /studio/
+        VITE_TICKET_SYSTEM_PUBLIC_URL: ${OTAI_TICKET_SYSTEM_PUBLIC_URL:?Set OTAI_TICKET_SYSTEM_PUBLIC_URL in .env}
+        VITE_TICKET_SYSTEM_PROVIDER: otai_desk
+    restart: unless-stopped
+    expose:
+      - "8080"
+    environment:
+      OTAI_STUDIO_API_URL: /studio-api
+    depends_on:
+      otai-local-backend:
+        condition: service_started
+
+volumes:
+  pgdata:
+  pgbackups:
+  caddy_data:
+  caddy_config:
+  ldap_data:
+  ldap_config:
+  studio-data:

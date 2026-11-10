@@ -1,0 +1,62 @@
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+@{
+    var token = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+    var path = Context.Request.Path.Value ?? "/";
+    string Nav(bool on) => on ? "nav-link bg-canvas" : "nav-link";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OTAI Desk</title>
+    <link rel="stylesheet" href="~/site.css" asp-append-version="true" />
+    <script src="~/htmx.min.js"></script>
+</head>
+<body class="min-h-screen bg-canvas font-sans text-ink antialiased"
+      style="--bg:@Model.Skin.Bg;--surface:@Model.Skin.Surface;--border:@Model.Skin.Border;--text:@Model.Skin.Text;--text-dim:@Model.Skin.TextDim;--accent:@Model.Skin.Accent"
+      hx-headers='{"RequestVerificationToken": "@token"}'>
+    <div class="flex min-h-screen flex-col md:flex-row">
+        <aside class="flex w-full shrink-0 flex-col border-b border-line bg-surface px-4 py-4 md:w-56 md:border-r md:border-b-0 md:px-3 md:py-6">
+            <a href="/" class="px-3 text-lg font-semibold tracking-tight">OTAI Desk</a>
+            <nav class="mt-4 flex flex-row flex-wrap gap-1 md:mt-8 md:flex-col">
+                @if (Model.Current.Rights.Contains("tickets:read"))
+                {
+                    <a class="@Nav(path == "/" || (path.StartsWith("/tickets") && !path.StartsWith("/tickets/new")))" href="/">Tickets</a>
+                    <a class="@Nav(path.StartsWith("/knowledge"))" href="/knowledge">Knowledge</a>
+                }
+                @if (Model.Current.Rights.Contains("tickets:write"))
+                {
+                    <a class="@Nav(path.StartsWith("/tickets/new"))" href="/tickets/new">New ticket</a>
+                }
+                @if (Model.Current.Rights.Contains("users:manage"))
+                {
+                    <a class="@Nav(path.StartsWith("/users"))" href="/users">Users</a>
+                    <a class="@Nav(path.StartsWith("/accounts"))" href="/accounts">Accounts</a>
+                }
+                @if (Model.Current.Rights.Contains("attributes:manage"))
+                {
+                    <a class="@Nav(path.StartsWith("/attributes"))" href="/attributes">Attributes</a>
+                }
+                <a class="@Nav(path.StartsWith("/designs"))" href="/designs">Design</a>
+            </nav>
+        </aside>
+        <div class="flex min-w-0 flex-1 flex-col">
+            <header class="flex items-center justify-end gap-4 border-b border-line px-6 py-3">
+                <span class="text-sm text-dim">@Model.Current.DisplayName · @Model.Skin.Name</span>
+                <form method="post" action="/logout">
+                    @Html.AntiForgeryToken()
+                    <button class="btn-quiet" type="submit">Sign out</button>
+                </form>
+            </header>
+            <main class="flex-1 px-6 py-6">
+                @if (Model.Failure is not null)
+                {
+                    <p class="fail mb-4 text-sm">@Model.Failure</p>
+                }
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+</body>
+</html>

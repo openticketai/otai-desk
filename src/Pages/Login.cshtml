@@ -1,0 +1,31 @@
+@page "/login"
+@model OtaiDesk.Pages.LoginModel
+@{
+    Layout = null;
+    var skin = OtaiDesk.Domain.DesignColors.LightForrest;
+}
+<!DOCTYPE html>
+<html lang="en" style="--bg:@skin.Bg;--surface:@skin.Surface;--border:@skin.Border;--text:@skin.Text;--text-dim:@skin.TextDim;--accent:@skin.Accent">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Sign in · OTAI Desk</title>
+    <link rel="stylesheet" href="~/site.css" asp-append-version="true" />
+</head>
+<body class="grid min-h-screen place-items-center bg-canvas font-sans text-ink antialiased">
+    <main class="card w-full max-w-sm p-8 shadow-sm">
+        <p class="text-xs font-medium tracking-wide text-accent uppercase">OTAI Desk</p>
+        <h1 class="page-title mt-2">Sign in</h1>
+        <p class="lede mt-1 mb-6">The ticket system.</p>
+        @if (Model.Failure is not null)
+        {
+            <p class="fail mb-4 text-sm">@Model.Failure</p>
+        }
+        <form class="grid gap-4" method="post">
+            <label class="field">Email <input class="control" name="email" type="email" autocomplete="username" required /></label>
+            <label class="field">Password <input class="control" name="password" type="password" autocomplete="current-password" required /></label>
+            <button class="btn mt-2" type="submit">Sign in</button>
+        </form>
+    </main>
+</body>
+</html>

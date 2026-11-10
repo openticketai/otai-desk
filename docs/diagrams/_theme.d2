@@ -1,0 +1,413 @@
+# OTAI architecture D2 theme (LD-052).
+# Spread-import from each domain diagram:
+#   ...@../_theme
+# Compile from the diagram directory (render_diagrams.py does this).
+# Do not compile this file alone. Indexer only scans diagrams/<domain>/*.d2.
+# House default: top-down. Domain files may repeat `direction: down`.
+# Sequence diagrams keep their own flow (do not set direction: right).
+
+direction: down
+
+vars: {
+  d2-config: {
+    theme-id: 200
+    pad: 80
+    center: true
+    # --theme 200 (Dark Mauve) uses theme-overrides (not dark-theme-overrides).
+    # Dark Mauve B1 is #CBA6F7 — container titles vanish on pastel layer fills.
+    # AA2 / B2 are type-column and visibility marks on light class bodies.
+    theme-overrides: {
+      B1: "#11111b"
+      AA2: "#11111b"
+      B2: "#11111b"
+    }
+  }
+}
+
+classes: {
+  group: {
+    style: {
+      border-radius: 12
+      font-size: 36
+      bold: true
+    }
+  }
+  # Do not name a node `layer` — that key is reserved in D2.
+  # Title ink is dark on every pastel *_layer fill (Dark Mauve B1 is too light).
+  # Force the title inside the box. D2 otherwise parks it outside when
+  # edges cross the top — black text then sits on the dark canvas.
+  layer: {
+    label.near: top-center
+    style: {
+      border-radius: 12
+      font-size: 72
+      bold: true
+      font-color: "#11111b"
+    }
+  }
+  # Combine with `layer`: class: [layer; inbound_adapter_layer]
+  # fill is the container background (not the class-shape stroke trick).
+  # Repeat title styles here — D2 last-class style merge can drop `layer` type.
+  inbound_adapter_layer: {
+    label.near: top-center
+    style: {
+      fill: "#e8edf4"
+      stroke: "#c5d0de"
+      font-size: 72
+      bold: true
+      font-color: "#11111b"
+    }
+  }
+  transport_layer: {
+    label.near: top-center
+    style: {
+      fill: "#e8edf4"
+      stroke: "#c5d0de"
+      font-size: 72
+      bold: true
+      font-color: "#11111b"
+    }
+  }
+  mapper_layer: {
+    label.near: top-center
+    style: {
+      fill: "#ebe4f2"
+      stroke: "#d0c4de"
+      font-size: 72
+      bold: true
+      font-color: "#11111b"
+    }
+  }
+  # Inbound and outbound port contracts share one visual identity.
+  # Combine with `layer`: class: [layer; port_layer]
+  port_layer: {
+    label.near: top-center
+    style: {
+      fill: "#eee3ed"
+      stroke: "#d5c2d2"
+      font-size: 72
+      bold: true
+      font-color: "#11111b"
+    }
+  }
+  application_layer: {
+    label.near: top-center
+    style: {
+      fill: "#f3ebdc"
+      stroke: "#ddd0b8"
+      font-size: 72
+      bold: true
+      font-color: "#11111b"
+    }
+  }
+  domain_layer: {
+    label.near: top-center
+    style: {
+      fill: "#dde6f2"
+      stroke: "#c2cfe0"
+      font-size: 72
+      bold: true
+      font-color: "#11111b"
+    }
+  }
+  outbound_adapter_layer: {
+    label.near: top-center
+    style: {
+      fill: "#dfece0"
+      stroke: "#c2d4c4"
+      font-size: 72
+      bold: true
+      font-color: "#11111b"
+    }
+  }
+  infrastructure_layer: {
+    label.near: top-center
+    style: {
+      fill: "#dfece0"
+      stroke: "#c2d4c4"
+      font-size: 72
+      bold: true
+      font-color: "#11111b"
+    }
+  }
+  persistence_layer: {
+    label.near: top-center
+    style: {
+      fill: "#d5e6ea"
+      stroke: "#b5ced4"
+      font-size: 72
+      bold: true
+      font-color: "#11111b"
+    }
+  }
+  presentation_layer: {
+    label.near: top-center
+    style: {
+      fill: "#eceef2"
+      stroke: "#cfd3db"
+      font-size: 72
+      bold: true
+      font-color: "#11111b"
+    }
+  }
+  state_layer: {
+    label.near: top-center
+    style: {
+      fill: "#e8e4f0"
+      stroke: "#cdc6dc"
+      font-size: 72
+      bold: true
+      font-color: "#11111b"
+    }
+  }
+  client_layer: {
+    label.near: top-center
+    style: {
+      fill: "#e2ebe8"
+      stroke: "#c2d4ce"
+      font-size: 72
+      bold: true
+      font-color: "#11111b"
+    }
+  }
+  neighbor_layer: {
+    label.near: top-center
+    style: {
+      fill: "#f4f1ea"
+      stroke: "#ddd6c8"
+      font-size: 72
+      bold: true
+      font-color: "#11111b"
+    }
+  }
+  # Marker for a parent of stacked `class: layer` children.
+  # D2 classes do not apply `grid-columns` — set `grid-columns: 1` on the
+  # node as well so every layer rectangle is the same full width.
+  # Do not name this class `layers` — that key is reserved in D2.
+  layer_stack: {
+    style: {
+      border-radius: 12
+    }
+  }
+  layout: {
+    label: ""
+    style: {
+      fill: "transparent"
+      stroke: "transparent"
+      border-radius: 0
+    }
+  }
+  # D2 class: fill → header bg + field text; stroke → body; font-color → title.
+  # Header must differ from the Dark Mauve canvas (#1e1e2e). Mauve #4c3d6e
+  # stays dark enough for field text on the light body.
+  component: {
+    shape: class
+    style: {
+      font-size: 30
+      bold: true
+      font-color: "#ffffff"
+      fill: "#4c3d6e"
+      stroke: "#e6e9ef"
+    }
+  }
+  model: {
+    shape: class
+    style: {
+      font-size: 30
+      bold: true
+      font-color: "#ffffff"
+      fill: "#4c3d6e"
+      stroke: "#dce4f0"
+    }
+  }
+  data_transfer: {
+    shape: class
+    style: {
+      font-size: 30
+      bold: true
+      font-color: "#ffffff"
+      fill: "#4c3d6e"
+      stroke: "#e4dceb"
+    }
+  }
+  service: {
+    shape: class
+    style: {
+      font-size: 30
+      bold: true
+      font-color: "#ffffff"
+      fill: "#4c3d6e"
+      stroke: "#ebe4d6"
+    }
+  }
+  repository: {
+    shape: class
+    style: {
+      font-size: 30
+      bold: true
+      font-color: "#ffffff"
+      fill: "#4c3d6e"
+      stroke: "#dce8dc"
+    }
+  }
+  external: {
+    style: {
+      border-radius: 10
+      font-size: 30
+      bold: true
+      stroke-dash: 3
+    }
+  }
+  edge: {
+    style: {
+      font-size: 22
+      bold: true
+      stroke-width: 2
+    }
+  }
+  weak: {
+    style: {
+      font-size: 20
+      bold: true
+      stroke-width: 2
+      stroke-dash: 4
+    }
+  }
+  inherits: {
+    style: {
+      font-size: 20
+      bold: true
+      stroke-width: 2
+      stroke: "#7D4594"
+    }
+  }
+  box: {
+    style: {
+      border-radius: 10
+      font-size: 30
+      bold: true
+    }
+  }
+  store: {
+    shape: cylinder
+    style: {
+      font-size: 28
+      bold: true
+    }
+  }
+  addon: {
+    shape: package
+    style: {
+      font-size: 28
+      bold: true
+    }
+  }
+  app: {
+    style: {
+      border-radius: 12
+      font-size: 42
+      bold: true
+    }
+  }
+  person: {
+    shape: person
+    style: {
+      font-size: 30
+      bold: true
+    }
+  }
+  lib: {
+    shape: package
+    style: {
+      border-radius: 10
+      font-size: 30
+      bold: true
+      stroke-dash: 3
+    }
+  }
+  ext: {
+    style: {
+      border-radius: 10
+      font-size: 48
+      bold: true
+      stroke-dash: 3
+    }
+  }
+  seq: {
+    style: {
+      font-size: 26
+      bold: true
+    }
+  }
+  llm_edge: {
+    style: {
+      font-size: 22
+      bold: true
+      stroke-width: 3
+      stroke: "#f9e2af"
+    }
+  }
+  otel_edge: {
+    style: {
+      font-size: 22
+      bold: true
+      stroke-width: 3
+      stroke: "#89b4fa"
+    }
+  }
+  stats_edge: {
+    style: {
+      font-size: 22
+      bold: true
+      stroke-width: 3
+      stroke: "#a6e3a1"
+    }
+  }
+  fn: {
+    style: {
+      border-radius: 8
+      font-size: 16
+      bold: true
+      stroke-dash: 3
+    }
+  }
+  port: {
+    style: {
+      border-radius: 8
+      font-size: 16
+      bold: true
+    }
+  }
+  actor: {
+    style: {
+      border-radius: 8
+      font-size: 16
+      bold: true
+      fill: "#dce4f0"
+    }
+  }
+  band: {
+    style: {
+      border-radius: 10
+      font-size: 18
+      bold: true
+    }
+  }
+  emphasis: {
+    style: {
+      font-size: 100
+      bold: true
+      stroke-width: 8
+      stroke: "#3d5a80"
+    }
+  }
+  faint: {
+    style: {
+      opacity: 0.12
+      stroke-width: 1
+      stroke: "#94a3b8"
+      font-color: "#94a3b8"
+      font-size: 14
+    }
+  }
+}

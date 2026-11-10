@@ -1,0 +1,21 @@
+{
+  "name": "otai-desk-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "python ../scripts/handbook.py publish",
+    "prebuild": "python ../scripts/handbook.py publish",
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "shots": "node scripts/shots.mjs"
+  },
+  "dependencies": {
+    "@astrojs/starlight": "^0.37.5",
+    "astro": "^5.16.8",
+    "sharp": "^0.34.5"
+  },
+  "devDependencies": {
+    "playwright": "^1.65.0"
+  }
+}

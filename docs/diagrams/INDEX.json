@@ -1,0 +1,209 @@
+{
+  "title": "OTAI Desk D2 Diagrams Index",
+  "description": "Index of D2 architecture, persistence, and API surface diagrams for OTAI Desk.",
+  "target_version": "2.1.0",
+  "token_encoding": "cl100k_base",
+  "diagrams_count": 5,
+  "domains": [
+    {
+      "key": "otai-desk",
+      "title": "OTAI Desk",
+      "diagram_ids": [
+        "otai-desk-architecture",
+        "otai-desk-faq-cmdb",
+        "otai-desk-modules",
+        "otai-desk-persons",
+        "otai-desk-rights"
+      ]
+    }
+  ],
+  "diagrams": [
+    {
+      "id": "otai-desk-architecture",
+      "title": "OTAI Desk Architecture",
+      "domain": "otai-desk",
+      "domain_title": "OTAI Desk",
+      "status": "plan-feature",
+      "version": "2.0.0",
+      "description": "OTAI Desk is the ticket system (LD-097). ASP.NET Core, Razor, and htmx. Caddy in front. Keycloak OIDC and LDAP for identity. Casbin for rights. Postgres is the source of record. Meilisearch is the index. Valkey is the cache. FAQ, CMDB, IMAP/SMTP, embedded chat, and licensed Studio.",
+      "tags": [
+        "otai-desk",
+        "architecture",
+        "aspnet",
+        "casbin",
+        "integrations"
+      ],
+      "related_adrs": [
+        "LD-082",
+        "LD-097"
+      ],
+      "related_docs": [
+        "otai-desk/docs/adr/0097-line-is-the-ticket-system.md",
+        "otai-desk/docs/index.md"
+      ],
+      "render_width": 4200,
+      "files": {
+        "d2": "desk/otai-desk-architecture.d2",
+        "png": "desk/otai-desk-architecture.png"
+      },
+      "size": {
+        "bytes": 3251,
+        "lines": 119,
+        "tokens": 963
+      }
+    },
+    {
+      "id": "otai-desk-faq-cmdb",
+      "title": "OTAI Desk FAQ, CMDB, and links",
+      "domain": "otai-desk",
+      "domain_title": "OTAI Desk",
+      "status": "plan-feature",
+      "version": "2.0.0",
+      "description": "FAQ, configuration items, and OTOBO-style links (LD-098). One link row joins any two objects and carries a type. Custom attributes hang off tickets, FAQs, configuration items, and links.",
+      "tags": [
+        "otai-desk",
+        "faq",
+        "cmdb",
+        "links",
+        "attributes"
+      ],
+      "related_adrs": [
+        "LD-097",
+        "LD-098",
+        "LD-101",
+        "LD-090"
+      ],
+      "related_docs": [
+        "otai-desk/docs/adr/0098-line-links-any-object-with-a-type-and-attributes.md",
+        "otai-desk/docs/diagrams/desk/otai-desk-architecture.d2"
+      ],
+      "render_width": 4200,
+      "files": {
+        "d2": "desk/otai-desk-faq-cmdb.d2",
+        "png": "desk/otai-desk-faq-cmdb.png"
+      },
+      "size": {
+        "bytes": 3102,
+        "lines": 134,
+        "tokens": 905
+      }
+    },
+    {
+      "id": "otai-desk-modules",
+      "title": "OTAI Desk Modules",
+      "domain": "otai-desk",
+      "domain_title": "OTAI Desk",
+      "status": "plan-refactor",
+      "version": "2.1.0",
+      "description": "Code shape inside the one OTAI Desk process (LD-099). Modular monolith: one module per feature behind IDeskModule. Tickets owns a Ticket aggregate and is split into Domain, Application, Infrastructure, Pages, and Api. Ticket events live in Tickets Contracts and go through a Postgres outbox. Search, mail, reports, and the Studio Runtime webhook subscribe. ArchUnitNET tests guard the boundaries.",
+      "tags": [
+        "otai-desk",
+        "architecture",
+        "modules",
+        "events"
+      ],
+      "related_adrs": [
+        "LD-097",
+        "LD-098",
+        "LD-099"
+      ],
+      "related_docs": [
+        "otai-desk/docs/adr/0099-otai-desk-is-a-modular-monolith-with-module-events.md",
+        "otai-desk/docs/diagrams/desk/otai-desk-architecture.d2"
+      ],
+      "render_width": 4200,
+      "files": {
+        "d2": "desk/otai-desk-modules.d2",
+        "png": "desk/otai-desk-modules.png"
+      },
+      "size": {
+        "bytes": 4373,
+        "lines": 149,
+        "tokens": 1169
+      }
+    },
+    {
+      "id": "otai-desk-persons",
+      "title": "OTAI Desk Persons",
+      "domain": "otai-desk",
+      "domain_title": "OTAI Desk",
+      "status": "plan-feature",
+      "version": "2.0.0",
+      "description": "Person, organization, role assignment, privilege tree, and queue grant (LD-100). A position stores a label. An organization scopes a role. A parent privilege includes its children. Conditions run after Casbin.",
+      "tags": [
+        "otai-desk",
+        "persons",
+        "privileges",
+        "casbin"
+      ],
+      "related_adrs": [
+        "LD-100",
+        "LD-097"
+      ],
+      "related_docs": [
+        "otai-desk/docs/adr/0100-hub-plugins-persons-and-a-privilege-tree.md",
+        "otai-desk/docs/requirements-plugins-and-persons.md"
+      ],
+      "render_width": 4200,
+      "files": {
+        "d2": "desk/otai-desk-persons.d2",
+        "png": "desk/otai-desk-persons.png"
+      },
+      "size": {
+        "bytes": 3785,
+        "lines": 160,
+        "tokens": 1025
+      }
+    },
+    {
+      "id": "otai-desk-rights",
+      "title": "OTAI Desk Rights",
+      "domain": "otai-desk",
+      "domain_title": "OTAI Desk",
+      "status": "plan-feature",
+      "version": "2.0.0",
+      "description": "Apache Casbin (Casbin.NET) for OTAI Desk (LD-097). Policies persist in Postgres. A queue is the object. An LDAP group maps onto a Casbin role at login. Missing session is 401. A deny is 403.",
+      "tags": [
+        "otai-desk",
+        "casbin",
+        "rights",
+        "oidc"
+      ],
+      "related_adrs": [
+        "LD-097"
+      ],
+      "related_docs": [
+        "otai-desk/docs/adr/0097-line-is-the-ticket-system.md",
+        "otai-desk/docs/diagrams/desk/otai-desk-architecture.d2"
+      ],
+      "render_width": 3600,
+      "files": {
+        "d2": "desk/otai-desk-rights.d2",
+        "png": "desk/otai-desk-rights.png"
+      },
+      "size": {
+        "bytes": 1971,
+        "lines": 80,
+        "tokens": 619
+      }
+    }
+  ],
+  "index_sizes": {
+    "INDEX.md": {
+      "bytes": 5017,
+      "lines": 60,
+      "tokens": 1512
+    },
+    "INDEX.json": {
+      "bytes": 6188,
+      "lines": 209,
+      "tokens": 1826
+    },
+    "all_d2_sources": {
+      "diagrams": 5,
+      "bytes": 16482,
+      "lines": 642,
+      "tokens": 4681
+    }
+  }
+}

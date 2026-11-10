@@ -1,0 +1,67 @@
+@model ZoomModel
+@if (Model.Ticket is null)
+{
+    <p class="fail text-sm">Ticket not found.</p>
+}
+else
+{
+    var ticket = Model.Ticket.Ticket;
+    <ui-columns tracks="minmax(0,2fr) 18rem">
+        <ui-stack>
+            <div>
+                <p class="text-sm text-dim">@ticket.TicketNumber</p>
+                <h1 class="page-title">@ticket.Title</h1>
+            </div>
+            <ui-stack class="gap-3">
+            @foreach (var article in ticket.Articles.OrderBy(row => row.CreatedAt))
+            {
+                <article class="card p-4">
+                    <div class="flex flex-wrap items-baseline gap-2">
+                        <strong>@article.Subject</strong>
+                        @if (article.IsInternal)
+                        {
+                            <span class="badge">internal</span>
+                        }
+                    </div>
+                    <p class="mt-1 text-sm text-dim">@article.FromAddress → @article.ToAddress</p>
+                    <p class="mt-3 text-sm whitespace-pre-wrap">@article.Body</p>
+                </article>
+            }
+            </ui-stack>
+            @if (Model.Current.Rights.Contains("tickets:write"))
+            {
+                <form method="post" hx-post="/tickets/@ticket.Id?handler=reply" hx-target="#zoom" hx-swap="innerHTML">
+                    <ui-section title="Reply">
+                        <ui-grid columns="2">
+                            <ui-field name="subject" label="Subject" input="text" required="true" />
+                            <ui-field name="to" label="To" input="text" required="true" />
+                            <ui-field name="body" label="Message" input="textarea" required="true" />
+                            <label class="field field-check"><input class="size-4" name="isInternal" type="checkbox" value="true" /><span>Internal</span></label>
+                            <button class="btn w-fit" type="submit">Reply</button>
+                        </ui-grid>
+                    </ui-section>
+                </form>
+            }
+        </ui-stack>
+        <ui-section title="Fields">
+            @if (Model.Current.Rights.Contains("tickets:write"))
+            {
+                <form method="post" hx-post="/tickets/@ticket.Id?handler=filterFields" hx-target="#zoom" hx-swap="innerHTML">
+                    <ui-stack>
+                        <ui-field name="status" label="Status" input="text" value="@ticket.Status" required="true" />
+                        <ui-field name="queue" label="Queue" input="text" value="@ticket.Queue" />
+                        <ui-field name="priority" label="Priority" input="text" value="@ticket.Priority" />
+                        <ui-field name="type" label="Type" input="text" value="@ticket.TicketType" />
+                        <ui-field name="service" label="Service" input="text" value="@ticket.Service" />
+                        <button class="btn w-fit" type="submit">Save</button>
+                    </ui-stack>
+                </form>
+            }
+            @foreach (var (name, value) in Model.Ticket.Attributes)
+            {
+                var definition = Model.Definitions.First(item => item.Name == name);
+                <ui-value label="@definition.Label" view="@definition.ViewKind" value="@value" />
+            }
+        </ui-section>
+    </ui-columns>
+}

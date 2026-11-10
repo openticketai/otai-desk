@@ -1,0 +1,37 @@
+@page "/tickets/new"
+@model NewModel
+<h1 class="page-title">New ticket</h1>
+<form class="mt-4" method="post">
+    <ui-stack>
+        <ui-section title="Ticket">
+            <ui-grid columns="2">
+                <ui-field name="title" label="Title" input="text" required="true" />
+                <ui-field name="status" label="Status" input="text" required="true" />
+            </ui-grid>
+        </ui-section>
+        <ui-section title="Classification">
+            <ui-grid columns="2">
+                <ui-field name="queue" label="Queue" input="text" />
+                <ui-field name="priority" label="Priority" input="text" />
+                <ui-field name="type" label="Type" input="text" />
+                <ui-field name="service" label="Service" input="text" />
+                @foreach (var definition in Model.InGroup("Classification"))
+                {
+                    <ui-field name="attr-@definition.Name" label="@definition.Label" input="@definition.InputKind" required="@definition.Required" options="@definition.Options" />
+                }
+            </ui-grid>
+        </ui-section>
+        @foreach (var group in Model.GroupsExcept("Classification"))
+        {
+            <ui-section title="@group.Key">
+                <ui-grid columns="2">
+                    @foreach (var definition in group)
+                    {
+                        <ui-field name="attr-@definition.Name" label="@definition.Label" input="@definition.InputKind" required="@definition.Required" options="@definition.Options" />
+                    }
+                </ui-grid>
+            </ui-section>
+        }
+        <button class="btn w-fit" type="submit">Create</button>
+    </ui-stack>
+</form>

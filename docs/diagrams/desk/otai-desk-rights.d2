@@ -1,0 +1,80 @@
+# ---
+# id: "otai-desk-rights"
+# title: "OTAI Desk Rights"
+# domain: "otai-desk"
+# status: "plan-feature"
+# version: "2.0.0"
+# description: >-
+#   Apache Casbin (Casbin.NET) for OTAI Desk (LD-097). Policies persist in
+#   Postgres. A queue is the object. An LDAP group maps onto a Casbin role
+#   at login. Missing session is 401. A deny is 403.
+# tags:
+#   - "otai-desk"
+#   - "casbin"
+#   - "rights"
+#   - "oidc"
+# related_adrs:
+#   - "LD-097"
+# related_docs:
+#   - "otai-desk/docs/adr/0097-line-is-the-ticket-system.md"
+#   - "otai-desk/docs/diagrams/desk/otai-desk-architecture.d2"
+# render_width: 3600
+# ---
+
+...@../_theme
+
+rights: "OTAI Desk rights" {
+  class: [group; layer_stack; app]
+  grid-columns: 1
+
+  login: Login {
+    class: [layer; neighbor_layer]
+    grid-columns: 3
+    grid-gap: 48
+    keycloak: "Keycloak · OIDC" { class: external }
+    ldap: LDAP { class: external }
+    session: cookie session { class: service }
+  }
+
+  gate: "Casbin.NET" {
+    class: [layer; application_layer]
+    grid-columns: 3
+    grid-gap: 48
+    enforcer: CasbinEnforcer {
+      shape: class
+      class: service
+      "Enforce(sub, obj, act)": bool
+    }
+    deny: "403" { class: component }
+    missing: "401" { class: component }
+  }
+
+  store: PostgreSQL {
+    class: [layer; persistence_layer]
+    grid-columns: 2
+    grid-gap: 32
+    rule: CasbinRuleRow {
+      shape: class
+      class: model
+      +id: int
+      +ptype: "str (p|g)"
+      +v0: str
+      +v1: str
+      +v2: "str | None"
+    }
+    queue: QueueRow {
+      shape: class
+      class: model
+      +id: UUID
+      +name: str
+    }
+  }
+}
+
+rights.login.ldap -> rights.login.keycloak: directory
+rights.login.keycloak -> rights.login.session: OIDC
+rights.login.ldap -> rights.gate.enforcer: "group → role"
+rights.login.session -> rights.gate.missing: "no cookie"
+rights.gate.enforcer -> rights.gate.deny: deny
+rights.gate.enforcer -> rights.store.rule: policy
+rights.gate.enforcer -> rights.store.queue: obj

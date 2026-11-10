@@ -1,0 +1,308 @@
+{
+  "screens": [
+    {
+      "slug": "accounts",
+      "route": "/accounts",
+      "title": "Accounts",
+      "title_de": "Konten",
+      "audience": "administrator",
+      "right": "users:manage",
+      "anonymous": false,
+      "handlers": [
+        "OnGet",
+        "OnPost"
+      ],
+      "fields": [
+        "Name",
+        "Domain"
+      ],
+      "columns": [
+        "Name",
+        "Domain"
+      ],
+      "actions": [
+        "Create"
+      ],
+      "source": "src/Pages/Accounts.cshtml"
+    },
+    {
+      "slug": "attributes",
+      "route": "/attributes",
+      "title": "Attributes",
+      "title_de": "Attribute",
+      "audience": "administrator",
+      "right": "attributes:manage",
+      "anonymous": false,
+      "handlers": [
+        "OnGet",
+        "OnGetWidgets",
+        "OnPost"
+      ],
+      "fields": [
+        "Data type",
+        "Name",
+        "Label",
+        "Description",
+        "Group",
+        "Options"
+      ],
+      "columns": [
+        "Name",
+        "Data type",
+        "Input",
+        "View",
+        "Group",
+        "Required"
+      ],
+      "actions": [
+        "Create"
+      ],
+      "source": "src/Pages/Attributes.cshtml"
+    },
+    {
+      "slug": "users",
+      "route": "/users",
+      "title": "Users",
+      "title_de": "Benutzer",
+      "audience": "administrator",
+      "right": "users:manage",
+      "anonymous": false,
+      "handlers": [
+        "OnGet",
+        "OnPost"
+      ],
+      "fields": [
+        "Role",
+        "Design",
+        "Email",
+        "Name",
+        "Password"
+      ],
+      "columns": [
+        "Name",
+        "Email",
+        "Roles",
+        "Design"
+      ],
+      "actions": [
+        "Create"
+      ],
+      "source": "src/Pages/Users.cshtml"
+    },
+    {
+      "slug": "designs",
+      "route": "/designs",
+      "title": "Design",
+      "title_de": "Design",
+      "audience": "user",
+      "right": null,
+      "anonymous": false,
+      "handlers": [
+        "OnGet",
+        "OnPostSelect",
+        "OnPostCreate"
+      ],
+      "fields": [
+        "Name",
+        "Background",
+        "Surface",
+        "Border",
+        "Text",
+        "Muted text",
+        "Accent"
+      ],
+      "columns": [],
+      "actions": [
+        "Use",
+        "Create and use"
+      ],
+      "source": "src/Pages/Designs.cshtml"
+    },
+    {
+      "slug": "knowledge",
+      "route": "/knowledge",
+      "title": "Knowledge",
+      "title_de": "Wissen",
+      "audience": "user",
+      "right": "tickets:read",
+      "anonymous": false,
+      "handlers": [
+        "OnGet",
+        "OnPost"
+      ],
+      "fields": [
+        "Question",
+        "Answer"
+      ],
+      "columns": [],
+      "actions": [
+        "Add"
+      ],
+      "source": "src/Pages/Knowledge.cshtml"
+    },
+    {
+      "slug": "new-ticket",
+      "route": "/tickets/new",
+      "title": "New ticket",
+      "title_de": "Neues Ticket",
+      "audience": "user",
+      "right": "tickets:write",
+      "anonymous": false,
+      "handlers": [
+        "OnGet",
+        "OnPost"
+      ],
+      "fields": [
+        "Title",
+        "Status",
+        "Queue",
+        "Priority",
+        "Type",
+        "Service"
+      ],
+      "columns": [],
+      "actions": [
+        "Create"
+      ],
+      "source": "src/Modules/Tickets/Pages/New.cshtml"
+    },
+    {
+      "slug": "signing-in",
+      "route": "/login",
+      "title": "Sign in",
+      "title_de": "Anmelden",
+      "audience": "user",
+      "right": null,
+      "anonymous": true,
+      "handlers": [
+        "OnGet",
+        "OnPost"
+      ],
+      "fields": [
+        "Email",
+        "Password"
+      ],
+      "columns": [],
+      "actions": [
+        "Sign in"
+      ],
+      "source": "src/Pages/Login.cshtml"
+    },
+    {
+      "slug": "ticket",
+      "route": "/tickets/{id:guid}",
+      "title": "Ticket",
+      "title_de": "Ticket",
+      "audience": "user",
+      "right": "tickets:read",
+      "anonymous": false,
+      "handlers": [
+        "OnGet",
+        "OnPostReply",
+        "OnPostFilterFields"
+      ],
+      "fields": [
+        "Subject",
+        "To",
+        "Message",
+        "Status",
+        "Queue",
+        "Priority",
+        "Type",
+        "Service"
+      ],
+      "columns": [],
+      "actions": [
+        "Reply",
+        "Save"
+      ],
+      "source": "src/Modules/Tickets/Pages/Zoom.cshtml"
+    },
+    {
+      "slug": "tickets",
+      "route": "/",
+      "title": "Tickets",
+      "title_de": "Tickets",
+      "audience": "user",
+      "right": "tickets:read",
+      "anonymous": false,
+      "handlers": [
+        "OnGet"
+      ],
+      "fields": [
+        "Status",
+        "Queue",
+        "Priority"
+      ],
+      "columns": [
+        "Number",
+        "Title",
+        "Status",
+        "Queue",
+        "Priority"
+      ],
+      "actions": [
+        "Filter"
+      ],
+      "source": "src/Modules/Tickets/Pages/Index.cshtml"
+    }
+  ],
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/api/v1/tickets",
+      "right": "tickets:read",
+      "source": "src/Modules/Tickets/Api/TicketEndpoints.cs"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/tickets",
+      "right": "tickets:write",
+      "source": "src/Modules/Tickets/Api/TicketEndpoints.cs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/tickets/{id:guid}",
+      "right": "tickets:read",
+      "source": "src/Modules/Tickets/Api/TicketEndpoints.cs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/tickets/{id:guid}/articles",
+      "right": "tickets:read",
+      "source": "src/Modules/Tickets/Api/TicketEndpoints.cs"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/tickets/{id:guid}/articles",
+      "right": "tickets:write",
+      "source": "src/Modules/Tickets/Api/TicketEndpoints.cs"
+    },
+    {
+      "method": "GET",
+      "path": "/health",
+      "right": "public",
+      "source": "src/OtaiDeskApp.cs"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/token",
+      "right": "public",
+      "source": "src/OtaiDeskApp.cs"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/me",
+      "right": "signed-in",
+      "source": "src/OtaiDeskApp.cs"
+    }
+  ],
+  "settings": [
+    "DATABASE_URL",
+    "OTAI_DESK_SECRET_KEY",
+    "OTAI_DESK_API_TOKEN",
+    "OTAI_DESK_TICKET_PROVIDER",
+    "OTAI_DESK_SEED_DEMO",
+    "OTAI_DESK_DEMO_PASSWORD"
+  ]
+}

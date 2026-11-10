@@ -1,0 +1,44 @@
+@page "/attributes"
+@model OtaiDesk.Pages.AttributesModel
+<h1 class="page-title">Attributes</h1>
+<div class="mt-4">
+<ui-table>
+    <thead><tr><th>Name</th><th>Data type</th><th>Input</th><th>View</th><th>Group</th><th>Required</th></tr></thead>
+    <tbody>
+    @foreach (var definition in Model.Definitions)
+    {
+        <tr>
+            <td>@definition.Label <span class="text-dim">@definition.Name</span></td>
+            <td>@definition.ValueKind</td>
+            <td>@definition.InputKind</td>
+            <td>@definition.ViewKind</td>
+            <td>@definition.GroupName</td>
+            <td>@(definition.Required ? "yes" : "no")</td>
+        </tr>
+    }
+    </tbody>
+</ui-table>
+</div>
+<form class="mt-8" method="post">
+    <ui-section title="Create attribute">
+        <ui-grid columns="2">
+            <ui-field name="name" label="Name" input="text" required="true" />
+            <ui-field name="label" label="Label" input="text" required="true" />
+            <ui-field name="description" label="Description" input="text" required="true" />
+            <ui-field name="groupName" label="Group" input="text" required="true" />
+            <label class="field">Data type
+                <select class="control" name="kind" required hx-get="/attributes?handler=widgets" hx-target="#widgets" hx-swap="innerHTML" hx-trigger="change" hx-include="this">
+                    <option value=""></option>
+                    @foreach (var type in OtaiDesk.Domain.FieldCatalog.All)
+                    {
+                        <option value="@type.ValueKind">@type.ValueKind</option>
+                    }
+                </select>
+            </label>
+            <div class="contents" id="widgets"></div>
+            <ui-field name="options" label="Options" input="text" />
+            <label class="field field-check"><input name="required" type="checkbox" value="true" /> <span>Required</span></label>
+            <button class="btn w-fit" type="submit">Create</button>
+        </ui-grid>
+    </ui-section>
+</form>

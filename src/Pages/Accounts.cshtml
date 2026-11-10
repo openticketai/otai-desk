@@ -1,0 +1,26 @@
+@page "/accounts"
+@model OtaiDesk.Pages.AccountsModel
+<h1 class="page-title">Accounts</h1>
+<div class="mt-4">
+<ui-table>
+    <thead><tr><th>Name</th><th>Domain</th></tr></thead>
+    <tbody>
+    @foreach (var account in Model.Accounts)
+    {
+        <tr>
+            <td>@account.Name</td>
+            <td class="text-dim">@account.Domain</td>
+        </tr>
+    }
+    </tbody>
+</ui-table>
+</div>
+<form class="mt-8" method="post">
+    <ui-section title="Create account">
+        <ui-grid columns="2">
+            <ui-field name="name" label="Name" input="text" required="true" />
+            <ui-field name="domain" label="Domain" input="text" />
+            <button class="btn w-fit" type="submit">Create</button>
+        </ui-grid>
+    </ui-section>
+</form>

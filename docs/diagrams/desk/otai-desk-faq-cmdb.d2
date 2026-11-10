@@ -1,0 +1,134 @@
+# ---
+# id: "otai-desk-faq-cmdb"
+# title: "OTAI Desk FAQ, CMDB, and links"
+# domain: "otai-desk"
+# status: "plan-feature"
+# version: "2.0.0"
+# description: >-
+#   FAQ, configuration items, and OTOBO-style links (LD-098). One link row
+#   joins any two objects and carries a type. Custom attributes hang off
+#   tickets, FAQs, configuration items, and links.
+# tags:
+#   - "otai-desk"
+#   - "faq"
+#   - "cmdb"
+#   - "links"
+#   - "attributes"
+# related_adrs:
+#   - "LD-097"
+#   - "LD-098"
+#   - "LD-101"
+#   - "LD-090"
+# related_docs:
+#   - "otai-desk/docs/adr/0098-line-links-any-object-with-a-type-and-attributes.md"
+#   - "otai-desk/docs/diagrams/desk/otai-desk-architecture.d2"
+# render_width: 4200
+# ---
+
+...@../_theme
+
+records: "FAQ · CMDB · links" {
+  class: [group; layer_stack; app]
+  grid-columns: 1
+
+  objects: Objects {
+    class: [layer; domain_layer]
+    grid-columns: 3
+    grid-gap: 32
+
+    ticket: TicketRow {
+      shape: class
+      class: model
+      +id: UUID
+    }
+
+    faq_row: FAQRow {
+      shape: class
+      class: model
+      +id: UUID
+      +organization_id: UUID
+      +question: str
+      +answer: str
+      +created_at: datetime
+      +updated_at: datetime
+    }
+
+    item: ConfigurationItemRow {
+      shape: class
+      class: model
+      +id: UUID
+      +organization_id: UUID
+      +name: str
+      +kind: str
+      +created_at: datetime
+      +updated_at: datetime
+    }
+  }
+
+  link_layer: Links {
+    class: [layer; persistence_layer]
+    grid-columns: 2
+    grid-gap: 40
+
+    link_type: LinkTypeRow {
+      shape: class
+      class: model
+      +id: UUID
+      +name: str
+      +source_label: str
+      +target_label: str
+    }
+
+    link_row: LinkRow {
+      shape: class
+      class: model
+      +id: UUID
+      +organization_id: UUID
+      +type_id: UUID
+      +source_kind: "str (ticket|faq|configuration_item)"
+      +source_id: UUID
+      +target_kind: "str (ticket|faq|configuration_item)"
+      +target_id: UUID
+      +created_at: datetime
+    }
+  }
+
+  attributes: Attributes {
+    class: [layer; persistence_layer]
+    grid-columns: 2
+    grid-gap: 40
+
+    definition: AttributeDefinitionRow {
+      shape: class
+      class: model
+      +id: UUID
+      +organization_id: UUID
+      +name: str
+      +label: str
+      +value_kind: "str (string|number|boolean|date|datetime|user|select)"
+      +input_kind: str
+      +view_kind: str
+      +group_name: str
+      +required: bool
+      +options_json: "str | None"
+      +object_kind: "str (ticket|faq|configuration_item|link)"
+      +link_type_id: "UUID | None"
+    }
+
+    value: AttributeValueRow {
+      shape: class
+      class: model
+      +id: UUID
+      +definition_id: UUID
+      +owner_kind: "str (ticket|faq|configuration_item|link)"
+      +owner_id: UUID
+      +value: str
+    }
+  }
+}
+
+records.objects -> records.link_layer.link_row: "either end"
+records.link_layer.link_type -> records.link_layer.link_row: type
+records.attributes.definition -> records.attributes.value: definition
+records.link_layer.link_row -> records.attributes.value: owner
+records.objects -> records.attributes.value: owner

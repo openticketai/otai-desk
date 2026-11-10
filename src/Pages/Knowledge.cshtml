@@ -1,0 +1,24 @@
+@page "/knowledge"
+@model OtaiDesk.Pages.KnowledgeModel
+<h1 class="page-title">Knowledge</h1>
+<ui-stack class="mt-4">
+@foreach (var faq in Model.Faqs)
+{
+    <article class="card p-4">
+        <h2 class="font-semibold">@faq.Question</h2>
+        <p class="mt-2 text-sm whitespace-pre-wrap">@faq.Answer</p>
+    </article>
+}
+</ui-stack>
+@if (Model.Current.Rights.Contains("tickets:write"))
+{
+    <form class="mt-6" method="post">
+        <ui-section title="Add an answer">
+            <ui-grid columns="1">
+                <ui-field name="question" label="Question" input="text" required="true" />
+                <ui-field name="answer" label="Answer" input="textarea" required="true" />
+                <button class="btn w-fit" type="submit">Add</button>
+            </ui-grid>
+        </ui-section>
+    </form>
+}

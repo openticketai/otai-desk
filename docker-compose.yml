@@ -1,0 +1,61 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: otai
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Run ./install.ps1 or ./install.sh first}
+      POSTGRES_DB: otai_desk
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U otai -d otai_desk"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  desk:
+    build: ./line/backend
+    restart: unless-stopped
+    expose:
+      - "8000"
+    environment:
+      DATABASE_URL: postgresql+asyncpg://otai:${POSTGRES_PASSWORD}@postgres:5432/otai_desk
+      OTAI_DESK_DEBUG: "true"
+      OTAI_DESK_SECRET_KEY: ${OTAI_DESK_SECRET_KEY:?Run ./install.ps1 or ./install.sh first}
+      OTAI_DESK_API_TOKEN: ${OTAI_DESK_API_TOKEN:?Set OTAI_DESK_API_TOKEN}
+      OTAI_DESK_CORS_ORIGINS: ${OTAI_DESK_CORS_ORIGINS:-http://localhost}
+      OTAI_DESK_TICKET_PROVIDER: ${OTAI_DESK_TICKET_PROVIDER:-desk}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  ui:
+    restart: unless-stopped
+    build:
+      context: ..
+      dockerfile: otai-desk/line/frontend/Dockerfile
+    expose:
+      - "3000"
+    depends_on:
+      - desk
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - desk
+      - ui
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:

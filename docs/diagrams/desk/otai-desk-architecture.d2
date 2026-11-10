@@ -1,0 +1,119 @@
+# ---
+# id: "otai-desk-architecture"
+# title: "OTAI Desk Architecture"
+# domain: "otai-desk"
+# status: "plan-feature"
+# version: "2.0.0"
+# description: >-
+#   OTAI Desk is the ticket system (LD-097). ASP.NET Core, Razor, and htmx.
+#   Caddy in front. Keycloak OIDC and LDAP for identity. Casbin for rights.
+#   Postgres is the source of record. Meilisearch is the index. Valkey is
+#   the cache. FAQ, CMDB, IMAP/SMTP, embedded chat, and licensed Studio.
+# tags:
+#   - "otai-desk"
+#   - "architecture"
+#   - "aspnet"
+#   - "casbin"
+#   - "integrations"
+# related_adrs:
+#   - "LD-082"
+#   - "LD-097"
+# related_docs:
+#   - "otai-desk/docs/adr/0097-line-is-the-ticket-system.md"
+#   - "otai-desk/docs/index.md"
+# render_width: 4200
+# ---
+
+...@../_theme
+
+desk: "OTAI Desk" {
+  class: [group; layer_stack; app]
+  grid-columns: 1
+
+  actors: Browser {
+    class: [layer; neighbor_layer]
+    grid-columns: 3
+    grid-gap: 32
+    admin: admin { class: person }
+    agent: agent { class: person }
+    employee: employee { class: person }
+  }
+
+  edge: Caddy {
+    class: [layer; neighbor_layer]
+    grid-columns: 1
+    caddy: Caddy { class: component }
+  }
+
+  identity: Identity {
+    class: [layer; neighbor_layer]
+    grid-columns: 3
+    grid-gap: 24
+    oidc: "Keycloak · OIDC" { class: external }
+    ldap: LDAP { class: external }
+    studio: "OTAI Studio · license" { class: external }
+  }
+
+  app: OtaiDesk {
+    class: [group; layer_stack; app]
+    grid-columns: 1
+
+    ui: "Razor · htmx" {
+      class: [layer; presentation_layer]
+      grid-columns: 2
+      grid-gap: 24
+      designs: "light-forrest · dark-forrest · user tokens" { class: component }
+      screens: "queue · zoom · reply · FAQ · CMDB" { class: component }
+    }
+
+    host: ASP.NET Core {
+      class: [layer; application_layer]
+      grid-columns: 4
+      grid-gap: 24
+      session: cookie session { class: service }
+      forgery: antiforgery { class: service }
+      rights: Casbin { class: service }
+      tickets: "queue · priority · service · SLA · escalation" { class: service }
+    }
+
+    modules: Modules {
+      class: [layer; domain_layer]
+      grid-columns: 3
+      grid-gap: 24
+      faq: FAQ { class: component }
+      cmdb: CMDB { class: component }
+      mail: MailKit { class: component }
+    }
+  }
+
+  data: Data {
+    class: [layer; persistence_layer]
+    grid-columns: 3
+    grid-gap: 24
+    pg: PostgreSQL { class: store }
+    search: Meilisearch { class: store }
+    cache: Valkey { class: store }
+  }
+
+  channels: Channels {
+    class: [layer; neighbor_layer]
+    grid-columns: 2
+    grid-gap: 32
+    mail: "IMAP · SMTP" { class: external }
+    chat: Chat { class: external }
+  }
+}
+
+desk.actors -> desk.edge.caddy: HTTPS
+desk.edge.caddy -> desk.identity.oidc: OIDC
+desk.identity.oidc -> desk.identity.ldap: directory
+desk.edge.caddy -> desk.identity.studio: /studio
+desk.edge.caddy -> desk.app: HTTP
+desk.identity.oidc -> desk.app.host.session: session
+desk.app.ui.designs -> desk.app.ui.screens: CSS variables
+desk.app.ui -> desk.app.host: htmx
+desk.app -> desk.data.pg: SoR
+desk.app -> desk.data.search: index
+desk.app -> desk.data.cache: cache
+desk.app.modules.mail -> desk.channels.mail: "fetch · send"
+desk.app.ui -> desk.channels.chat: embed

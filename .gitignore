@@ -1,0 +1,12 @@
+bin/
+obj/
+node_modules/
+dist/
+.astro/
+__pycache__/
+*.user
+.env
+*.db
+desktop.ini
+Thumbs.db
+.DS_Store

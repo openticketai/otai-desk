@@ -1,0 +1,47 @@
+dn: ou=people,{{ LDAP_BASE_DN }}
+objectClass: organizationalUnit
+ou: people
+
+dn: ou=groups,{{ LDAP_BASE_DN }}
+objectClass: organizationalUnit
+ou: groups
+
+dn: uid=admin,ou=people,{{ LDAP_BASE_DN }}
+objectClass: inetOrgPerson
+cn: Anna Admin
+sn: Admin
+uid: admin
+mail: admin@demo.openticketai.com
+userPassword: demo-password
+
+dn: uid=agent,ou=people,{{ LDAP_BASE_DN }}
+objectClass: inetOrgPerson
+cn: Max Agent
+sn: Agent
+uid: agent
+mail: agent@demo.openticketai.com
+userPassword: demo-password
+
+dn: uid=employee,ou=people,{{ LDAP_BASE_DN }}
+objectClass: inetOrgPerson
+cn: Erika Employee
+sn: Employee
+uid: employee
+mail: employee@demo.openticketai.com
+userPassword: demo-password
+
+dn: cn=helpdesk-admins,ou=groups,{{ LDAP_BASE_DN }}
+objectClass: groupOfNames
+cn: helpdesk-admins
+member: uid=admin,ou=people,{{ LDAP_BASE_DN }}
+
+dn: cn=helpdesk-agents,ou=groups,{{ LDAP_BASE_DN }}
+objectClass: groupOfNames
+cn: helpdesk-agents
+member: uid=admin,ou=people,{{ LDAP_BASE_DN }}
+member: uid=agent,ou=people,{{ LDAP_BASE_DN }}
+
+dn: cn=helpdesk-employees,ou=groups,{{ LDAP_BASE_DN }}
+objectClass: groupOfNames
+cn: helpdesk-employees
+member: uid=employee,ou=people,{{ LDAP_BASE_DN }}

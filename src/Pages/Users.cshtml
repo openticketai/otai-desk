@@ -1,0 +1,44 @@
+@page "/users"
+@model OtaiDesk.Pages.UsersModel
+<h1 class="page-title">Users</h1>
+<div class="mt-4">
+<ui-table>
+    <thead><tr><th>Name</th><th>Email</th><th>Roles</th><th>Design</th></tr></thead>
+    <tbody>
+    @foreach (var user in Model.Users)
+    {
+        <tr>
+            <td>@user.DisplayName</td>
+            <td class="text-dim">@user.Email</td>
+            <td>@string.Join(", ", user.Roles.Select(role => role.Name))</td>
+            <td class="text-dim">@user.DesignId</td>
+        </tr>
+    }
+    </tbody>
+</ui-table>
+</div>
+<form class="mt-8" method="post">
+    <ui-section title="Create user">
+        <ui-grid columns="2">
+            <ui-field name="email" label="Email" input="email" required="true" />
+            <ui-field name="displayName" label="Name" input="text" required="true" />
+            <ui-field name="password" label="Password" input="password" required="true" />
+            <label class="field">Role
+                <select class="control" name="roleName" required>
+                    <option value=""></option>
+                    <option value="admin">admin</option>
+                    <option value="agent">agent</option>
+                    <option value="employee">employee</option>
+                </select>
+            </label>
+            <label class="field">Design
+                <select class="control" name="designId" required>
+                    <option value=""></option>
+                    <option value="light-forrest">light-forrest</option>
+                    <option value="dark-forrest">dark-forrest</option>
+                </select>
+            </label>
+            <button class="btn w-fit" type="submit">Create</button>
+        </ui-grid>
+    </ui-section>
+</form>

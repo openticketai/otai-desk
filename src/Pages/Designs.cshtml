@@ -1,0 +1,32 @@
+@page "/designs"
+@model OtaiDesk.Pages.DesignsModel
+<h1 class="page-title">Design</h1>
+<p class="lede mt-1">Built-in skins are light-forrest and dark-forrest. A design you create is yours.</p>
+<ul class="mt-4 grid gap-2">
+@foreach (var design in Model.Choices)
+{
+    <li>
+        <form class="card flex items-center gap-3 px-4 py-3" method="post" asp-page-handler="select">
+            <input type="hidden" name="designId" value="@design.Id" />
+            <span class="size-4 rounded-full border border-line" style="background:@design.Accent"></span>
+            <span class="font-medium">@design.Name</span>
+            <span class="text-sm text-dim">@design.Id</span>
+            <button class="btn-quiet ml-auto" type="submit">Use</button>
+        </form>
+    </li>
+}
+</ul>
+<form class="mt-8" method="post" asp-page-handler="create">
+    <ui-section title="Create a design">
+        <ui-grid columns="2">
+            <ui-field name="name" label="Name" input="text" required="true" />
+            <ui-field name="bg" label="Background" input="text" required="true" />
+            <ui-field name="surface" label="Surface" input="text" required="true" />
+            <ui-field name="border" label="Border" input="text" required="true" />
+            <ui-field name="text" label="Text" input="text" required="true" />
+            <ui-field name="textDim" label="Muted text" input="text" required="true" />
+            <ui-field name="accent" label="Accent" input="text" required="true" />
+            <button class="btn w-fit" type="submit">Create and use</button>
+        </ui-grid>
+    </ui-section>
+</form>
