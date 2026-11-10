@@ -15,9 +15,6 @@ export default defineConfig({
           href: "https://github.com/openticketai/otai-desk",
         },
       ],
-      editLink: {
-        baseUrl: "https://github.com/openticketai/otai-desk/edit/main/docs/handbook/",
-      },
       defaultLocale: "de",
       locales: {
         de: { label: "Deutsch", lang: "de" },
