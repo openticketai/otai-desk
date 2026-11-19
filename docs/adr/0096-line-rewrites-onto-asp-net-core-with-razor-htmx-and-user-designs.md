@@ -55,7 +55,7 @@ Chosen option: **One ASP.NET Core app replaces `line/backend` and `line/frontend
 ### Binding rules — carried forward
 
 1. One app. Do not add a second portal. Do not resurrect Nuxt `mini-portal`.
-2. `OTAI_DESK_TICKET_PROVIDER` selects the core: `desk`, `otobo`, `znuny`, `zammad`, or `kix`. Unset means `desk`.
+2. `OTAI_DESK_TICKET_PROVIDER` selects the core: `desk`, `otobo`, `znuny`, or `zammad`. Unset means `desk`.
 3. `desk`: Postgres is the source of record. Roles are `admin`, `agent`, and `employee`. Rights are `tickets:read`, `tickets:write`, `attributes:manage`, and `users:manage`. A role grants rights. The user's rights are the union.
 4. Any other provider: `otai-ts-connector` is the core. Line stores a replica. The ticket system wins conflicts. Until the connector is wired, calls fail loud. External login stamps `customer` or `agent` from the connector. Do not copy ticket-system groups.
 5. Ticket columns that are always present: `id`, `title`, `ticket_number`, `status`. `organization_id` is tenancy. `queue`, `priority`, `type`, and `service` are columns and may be empty. Other ticket facts are custom attributes with a definition (name, kind, required, options).

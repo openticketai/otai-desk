@@ -41,7 +41,7 @@ LD-083 is superseded. LD-082 product rules stay (file now in
 1. **Do not** add Desk features under `otai/apps/`.
 2. Desk SSOT: `otai-desk/docs/adr/`, `otai-desk/docs/diagrams/`,
    `otai-desk/docs/api-specs/`.
-3. One application (LD-092): API `otai-desk/line/backend`, UI `otai-desk/line/frontend`. Ticket core is `OTAI_DESK_TICKET_PROVIDER` (`desk` or `otobo` / `znuny` / `zammad` / `kix`). Do not add a second portal app.
+3. One application (LD-092): API `otai-desk/line/backend`, UI `otai-desk/line/frontend`. Ticket core is `OTAI_DESK_TICKET_PROVIDER` (`desk` or `otobo` / `znuny` / `zammad`). Do not add a second portal app.
 4. Same order as LD-078, inside that tree. No TypeSpec codegen.
 5. Optional Studio/chat-widget is an embed into Desk UI, not a shared
    process with Studio API.

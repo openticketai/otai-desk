@@ -12,7 +12,7 @@ categories: [product-ux, runtime]
 
 ## Context and Problem Statement
 
-OTAI Desk had two applications: Nuxt `mini-portal` (facade over OTOBO, Znuny, Zammad, KIX) and Vue `desk` (native ticket system). That split was a mistake. Customers still need both outcomes: run Desk as the helpdesk, or keep the helpdesk they already run. Those are two modes of one application, not two products.
+OTAI Desk had two applications: Nuxt `mini-portal` (facade over OTOBO, Znuny, Zammad) and Vue `desk` (native ticket system). That split was a mistake. Customers still need both outcomes: run Desk as the helpdesk, or keep the helpdesk they already run. Those are two modes of one application, not two products.
 
 LD-082's one-portal and RBAC rules stay. Its UI path (`mini-portal/frontend`) and the rule that an external ticket system is always the source of record are replaced here. LD-084's product tree stays; its "two apps" path rule is replaced here. LD-090 auth and attributes stay for the Desk API.
 
@@ -31,13 +31,13 @@ LD-082's one-portal and RBAC rules stay. Its UI path (`mini-portal/frontend`) an
 
 ## Decision Outcome
 
-Chosen option: **One application (`line/frontend` + `line/backend`) always talks to a `TicketSystemPort`. The core is local Desk or OTOBO, Znuny, Zammad, or KIX.**
+Chosen option: **One application (`line/frontend` + `line/backend`) always talks to a `TicketSystemPort`. The core is local Desk or OTOBO, Znuny, or Zammad.**
 
 ### Binding rules
 
 1. Do not add a second portal app. Do not resurrect Nuxt `mini-portal`.
 2. API: `otai-desk/line/backend`. UI: `otai-desk/line/frontend`.
-3. `OTAI_DESK_TICKET_PROVIDER` selects the core: `desk`, `otobo`, `znuny`, `zammad`, or `kix`. Unset means `desk` so existing local runs stay the Desk core.
+3. `OTAI_DESK_TICKET_PROVIDER` selects the core: `desk`, `otobo`, `znuny`, or `zammad`. Unset means `desk` so existing local runs stay the Desk core.
 4. `desk`: local Postgres is the source of record. Login uses Desk users and rights (LD-090).
 5. Any other provider: `otai-ts-connector` is the core. Desk stores a replica. The ticket system wins conflicts. Until the connector is wired, calls fail loud.
 6. External login stamps `customer` or `agent` from the connector identity check. Do not copy ticket-system groups.

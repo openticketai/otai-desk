@@ -5,8 +5,8 @@ Docker Compose. Caddy serves everything on port **80** (`/` → UI, `/api/*` →
 
 ## Prerequisites
 
-- [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) (`gcloud`) authenticated as a user with Compute Engine permissions (`gcloud auth login` as `tobias.bueck@openticketai.com`)
-- GCP project with Compute Engine API enabled (default: `otai-studio-firebase`)
+- [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) (`gcloud`) authenticated as a user with Compute Engine permissions
+- GCP project with the Compute Engine API enabled. Set `PROJECT_ID` in `.env`.
 
 ## 1. Provision the VM
 
@@ -36,13 +36,13 @@ From the monorepo root context (includes `otai-vue-ui` for the UI build):
 
 ```powershell
 cd otai-desk\deployment\gcp-vm
-.\Deploy-ToGceVm.ps1 -ProjectId otai-studio-firebase -Zone europe-west3-a -VmName otai-desk-demo
+.\Deploy-ToGceVm.ps1 -ProjectId your-gcp-project -Zone your-zone -VmName otai-desk-demo
 ```
 
 Linux / Git Bash:
 
 ```bash
-./deploy-to-vm.sh --project otai-studio-firebase --zone europe-west3-a --vm otai-desk-demo
+./deploy-to-vm.sh --project your-gcp-project --zone your-zone --vm otai-desk-demo
 ```
 
 First deploy builds images on the VM (several minutes). Subsequent deploys reuse layers.
@@ -79,7 +79,7 @@ preserved after the first bootstrap (see `../demo/env.example` for keys).
 ## SSH
 
 ```powershell
-gcloud compute ssh --project otai-studio-firebase --zone europe-west3-a otai-desk-demo
+gcloud compute ssh --project your-gcp-project --zone your-zone otai-desk-demo
 ```
 
 On the VM:
@@ -93,6 +93,6 @@ sudo docker compose logs -f desk
 ## Teardown
 
 ```bash
-gcloud compute instances delete otai-desk-demo --zone europe-west3-a --quiet
-gcloud compute addresses delete otai-desk-demo-ip --region europe-west3 --quiet
+gcloud compute instances delete otai-desk-demo --zone your-zone --quiet
+gcloud compute addresses delete otai-desk-demo-ip --region your-region --quiet
 ```

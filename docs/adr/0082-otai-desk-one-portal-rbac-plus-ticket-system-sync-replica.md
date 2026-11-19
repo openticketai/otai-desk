@@ -16,7 +16,7 @@ LD-081 locked OTAI Desk Phase 1 as a **customer-only** portal that must **not**
 store ticket rows (sessions/org/audit only) and postponed any agent UI to Phase 2. That split two products (customer portal vs agent portal) and forced a
 passthrough architecture.
 
-Buyers still need **zero migration**: keep OTOBO / Znuny / Zammad / KIX as the
+Buyers still need **zero migration**: keep OTOBO / Znuny / Zammad as the
 system of record. Operators also need **one** Desk UI where a customer and a
 first-level agent use the same app with different rights. Desk already has a
 local ticket schema; throwing it away just to re-add it in Phase 3 is waste.
@@ -73,7 +73,7 @@ rows”**. Community Edition, LGPL Desk, connector session rules, and
 ### Binding rules — replica and sync
 
 1. **System of record:** the configured ticket core (LD-092). `desk` means local
-   Postgres. `otobo`, `znuny`, `zammad`, or `kix` means that system, with a Desk replica.
+   Postgres. `otobo`, `znuny`, or `zammad` means that system, with a Desk replica.
 2. **Local DB:** Desk **does** persist ticket, article, user-map, and FAQ
    replica rows (plus sessions, org branding, audit). This is not Phase 3
    native SoR.

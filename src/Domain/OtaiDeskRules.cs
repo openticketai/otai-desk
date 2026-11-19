@@ -22,7 +22,7 @@ public static class Rights
 
 public static class Providers
 {
-    public static readonly string[] All = ["desk", "otobo", "znuny", "zammad", "kix"];
+    public static readonly string[] All = ["desk", "otobo", "znuny", "zammad"];
 
     public static string Require(string? raw)
     {

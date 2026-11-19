@@ -27,7 +27,7 @@ duplicate Runtime and split the product.
 
 - One I/O path: `otai-ts-connector`.
 - OSS Desk must stay usable without buying Studio.
-- Desk can advertise more capabilities than OTOBO / Znuny / Zammad / KIX.
+- Desk can advertise more capabilities than OTOBO / Znuny / Zammad.
 - Approval and access policy belong in Desk.
 - Do not maintain two agent engines.
 
@@ -64,7 +64,7 @@ TS). Studio never calls Desk routers for tools.
    combined deploys). Same ports as other providers.
 3. Capabilities are explicit (`change_request`, richer FAQ, attributes,
    …). Missing capability → `UnsupportedTicketSystemCapabilityError`.
-   OTOBO / Znuny / Zammad / KIX leave Desk-only flags off.
+   OTOBO / Znuny / Zammad leave Desk-only flags off.
 4. Access `deny` | `execute` | `request_approval` is Desk config. The
    connector exposes it; Studio does not store a second ACL.
 

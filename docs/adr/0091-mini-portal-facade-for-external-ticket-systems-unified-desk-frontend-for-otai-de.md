@@ -18,7 +18,7 @@ OTOBO and Znuny enforce a rigid split between agents (`users`) and customers (`c
 
 ## Decision Drivers
 
-- Legacy ticket systems (OTOBO, Znuny, Zammad, KIX) need a modern, lightweight customer portal without requiring customers to replace their backend.
+- Legacy ticket systems (OTOBO, Znuny, Zammad) need a modern, lightweight customer portal without requiring customers to replace their backend.
 - OTAI Desk as an independent ticket system needs modern, unified identity and frictionless role transitions (agents can request tickets, customers can be promoted to agents).
 - Avoid maintaining two separate frontends for the OTAI Desk product.
 - Enable standalone, lightweight sales demos of the `mini-portal` without needing heavy 3rd-party Docker/Perl stacks.
@@ -31,13 +31,13 @@ OTOBO and Znuny enforce a rigid split between agents (`users`) and customers (`c
 
 ## Decision Outcome
 
-Chosen option: **`mini-portal` is a universal portal facade for 3rd-party ticket systems (OTOBO, Znuny, Zammad, KIX) and demo driver; the native OTAI Desk ticket system uses a single unified frontend (`line/frontend`) with role-based navigation and permissions under a unified user model.**
+Chosen option: **`mini-portal` is a universal portal facade for 3rd-party ticket systems (OTOBO, Znuny, Zammad) and demo driver; the native OTAI Desk ticket system uses a single unified frontend (`line/frontend`) with role-based navigation and permissions under a unified user model.**
 
 The OTAI Desk backend (`line/backend`) implements connector provider compatibility so sales demos can showcase `mini-portal` over an instant, lightweight local backend without spinning up legacy systems.
 
 ### Binding rules — Mini-Portal (`otai-desk/mini-portal`)
 
-1. `mini-portal` is targeted at customers who retain their existing external ticket systems (OTOBO, Znuny, Zammad, KIX). It communicates via `otai-ts-connector` and portal replica sync (LD-082).
+1. `mini-portal` is targeted at customers who retain their existing external ticket systems (OTOBO, Znuny, Zammad). It communicates via `otai-ts-connector` and portal replica sync (LD-082).
 2. `mini-portal` is NOT the customer interface for native OTAI Desk deployments.
 3. For sales demos and integration tests, `line/backend` serves as an optional mock/provider target for `mini-portal`.
 

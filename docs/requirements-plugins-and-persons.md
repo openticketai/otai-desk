@@ -7,7 +7,7 @@ last_updated_at: "2026-11-09"
 
 # Plugins, persons, and privileges
 
-Working requirements for [LD-100](./adr/0100-hub-plugins-persons-and-a-privilege-tree.md). Todos are [OPE-1448](https://linear.app/openticketai/issue/OPE-1448/desk-core-hub-plugins-persons-privilege-tree). The picture is [`otai-desk-persons`](./diagrams/desk/otai-desk-persons.d2). LD-100 is proposed. LD-097 still forbids a plugin marketplace until LD-100 is accepted.
+Working requirements for [LD-100](./adr/0100-hub-plugins-persons-and-a-privilege-tree.md). The picture is [`otai-desk-persons`](./diagrams/desk/otai-desk-persons.d2). LD-100 is proposed. LD-097 still forbids a plugin marketplace until LD-100 is accepted.
 
 ## Core
 

@@ -10,7 +10,7 @@ Sequencing: [`roadmap.md`](./roadmap.md).
 Ship an **open-source (LGPL)** **single** app: customers and agents use
 `line/frontend`. **Rights** differ. The API always calls a ticket core.
 `desk` means local Postgres is the source of record. `otobo`, `znuny`,
-`zammad`, or `kix` means that system is the source of record and Desk keeps
+or `zammad` means that system is the source of record and Desk keeps
 a replica.
 
 ## Product pitch (one line)
@@ -27,7 +27,7 @@ Browser → otai-desk/line/frontend
   → otai-desk/line/backend
   → TicketSystemPort
        desk    → local Postgres (source of record)
-       otobo|znuny|zammad|kix → replica + otai-ts-connector
+       otobo|znuny|zammad → replica + otai-ts-connector
                               → ticket system wins conflicts
 ```
 
@@ -72,7 +72,7 @@ held **only** on the Desk server.
 | `search_customer_faq`                    | Public / customer FAQ                                                      |
 | sync pull                                | Incremental or windowed fetch                                              |
 
-Providers: **OTOBO + Znuny first**, then Zammad, then KIX.
+Providers: **OTOBO + Znuny first**, then Zammad.
 
 ### WS2 — Replica + sync
 

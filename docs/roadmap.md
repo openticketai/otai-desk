@@ -56,9 +56,6 @@ flowchart LR
 - Agent view gets AI-suggested replies (still not canned responses).
 - Studio stays outside the Line process. A license unlocks it.
 
-AI items land under [OPE-27](https://linear.app/openticketai/issue/OPE-27)
-and [OPE-32](https://linear.app/openticketai/issue/OPE-32).
-
 ## How this relates to existing docs
 
 - **Diagram:** [`otai-desk-architecture`](./diagrams/desk/otai-desk-architecture.d2) (LD-097).

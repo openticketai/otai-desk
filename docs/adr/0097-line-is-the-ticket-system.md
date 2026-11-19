@@ -12,7 +12,7 @@ categories: [product-ux, runtime, deployment]
 
 ## Context and Problem Statement
 
-LD-096 rewrote Line onto ASP.NET Core, Razor, and htmx, and it kept a swappable ticket core: Line could store a replica while OTOBO, Znuny, Zammad, or KIX stayed the source of record. That is the portal shape.
+LD-096 rewrote Line onto ASP.NET Core, Razor, and htmx, and it kept a swappable ticket core: Line could store a replica while OTOBO, Znuny, or Zammad stayed the source of record. That is the portal shape.
 
 Line is the ticket system. Customers and agents use one app. Rights differ. Postgres holds the tickets.
 
@@ -41,7 +41,7 @@ Chosen option: **One ASP.NET Core app is the ticket system. Caddy fronts it. Ide
 1. One ASP.NET Core project at `otai-desk/src/`. Razor layouts and partials. htmx returns a partial for ticket list, zoom, reply, and filters. No second SPA. No Vue, Lit, or FastAPI process beside it.
 2. The action checks Casbin, then returns HTML for what that user may see. State-changing htmx requests use ASP.NET antiforgery. The browser session is a cookie.
 3. Designs stay as in LD-096: `light-forrest` and `dark-forrest`, plus user-created token sets. A design changes colors only.
-4. Do not add `TicketSystemPort`. Do not store a replica of OTOBO, Znuny, Zammad, or KIX. Do not resurrect Nuxt `mini-portal`.
+4. Do not add `TicketSystemPort`. Do not store a replica of OTOBO, Znuny, or Zammad. Do not resurrect Nuxt `mini-portal`.
 
 ### Binding rules — identity and rights
 
