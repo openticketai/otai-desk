@@ -4,7 +4,7 @@
 
 **OTAI Desk** is the on-prem ticket system. One app for customers and agents. Rights differ; the app does not.
 
-Product and handbook: [desk.openticketai.com/docs](https://desk.openticketai.com/docs/) ([English](https://desk.openticketai.com/docs/en/)).
+Handbook: [desk.openticketai.com/docs/de](https://desk.openticketai.com/docs/de/) ([English](https://desk.openticketai.com/docs/en/)).
 
 ![Ticket list](docs/handbook/screenshots/tickets.png)
 
